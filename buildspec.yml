@@ -32,6 +32,6 @@ phases:
       - Invoke-WebRequest "https://master.dockerproject.org/windows/x86_64/docker.exe" -OutFile  ( New-Item -Path "${Env:ProgramFiles}\docker\docker.exe" -Force )
       - Invoke-WebRequest "https://master.dockerproject.org/windows/x86_64/dockerd.exe" -OutFile ( New-Item -Path "${Env:ProgramFiles}\docker\dockerd.exe" -Force )
       - '& "${Env:ProgramFiles}\docker\dockerd.exe" -H npipe:////./pipe/win_engine --service-name=com.docker.windows --register-service'
-      - Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V, Containers -All -NoRestart
+      - Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V, Containers -All
       - Start-Service com.docker* -Passthru
       - '& "${Env:ProgramFiles}\docker\docker.exe" version'
