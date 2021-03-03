@@ -1,0 +1,37 @@
+# version: 0.2
+
+# phases:
+#   install:
+#     runtime-versions:
+#       python: latest
+#   pre_build:
+#     commands:
+#       - echo Logging in to Amazon ECR...
+#       - echo $PYTHON_38_VERSION
+#       - env
+#       - python --version
+#       - pip --version
+      # - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  # build:
+  #   commands:
+  #     - echo Build started on `date`
+  #     - echo Building the Docker image...          
+  #     - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+  #     - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
+  # post_build:
+  #   commands:
+  #     - echo Build completed on `date`
+  #     - echo Pushing the Docker image...
+  #     - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - Invoke-WebRequest "https://master.dockerproject.org/windows/x86_64/docker.exe" -OutFile  ( New-Item -Path "${Env:ProgramFiles}\docker\docker.exe" -Force )
+      - Invoke-WebRequest "https://master.dockerproject.org/windows/x86_64/dockerd.exe" -OutFile ( New-Item -Path "${Env:ProgramFiles}\docker\dockerd.exe" -Force )
+      - '& "${Env:ProgramFiles}\docker\dockerd.exe" -H npipe:////./pipe/win_engine --service-name=com.docker.windows --register-service'
+      - Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V, Containers -All -NoRestart
+      - Start-Service com.docker* -Passthru
+      - '& "${Env:ProgramFiles}\docker\docker.exe" version'
